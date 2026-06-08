@@ -12,8 +12,8 @@ const ANGLE_DEG: Record<number, number> = { 1: 120, 2: 180, 3: 240, 4: 300, 5: 0
 export default function PortDial({
   value,
   onChange,
-  size = 96,
-  buttonSize = 30,
+  size = 132,
+  buttonSize = 40,
 }: {
   value: number | null;
   onChange: (port: number | null) => void;
