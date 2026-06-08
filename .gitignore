@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+next-env.d.ts
+
+# event logs (서버 런타임 생성, 서버 설계서 §7)
+logs/
+*.log
+
+# 사용자 업로드 효과음 (런타임 생성)
+data/sounds/
+
+# misc
+.DS_Store
+*.tsbuildinfo

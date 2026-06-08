@@ -1,0 +1,374 @@
+{
+  "_meta": {
+    "version": "1.4",
+    "created": "2026-05-29",
+    "updated": "2026-06-03",
+    "source": "2026-05-13_국수나무-메뉴-레시피북.md",
+    "scope": "면 스테이션 해당 메뉴 (해면기 사용)",
+    "cook_time_options": [
+      100,
+      150,
+      180,
+      60,
+      40,
+      -1
+    ],
+    "process_options": [
+      "none",
+      "wash",
+      "cool",
+      "torim"
+    ],
+    "noodle_types": [
+      "생면1.0",
+      "생면1.2",
+      "메밀면",
+      "우동면",
+      "쌀국수면",
+      "냉면"
+    ],
+    "unverified": [],
+    "_changelog": [
+      {
+        "version": "1.0",
+        "date": "2026-05-29",
+        "note": "초안. 면 스테이션 메뉴 25개(실레시피) + 추정 1개(꼬치어묵 우동) = 26개."
+      },
+      {
+        "version": "1.1",
+        "date": "2026-06-01",
+        "note": "noodle_type_colors 추가."
+      },
+      {
+        "version": "1.2",
+        "date": "2026-06-02",
+        "note": "menu_21(꼬치어묵 우동) 제거 — 레시피북에 독립 레시피 없음(우동육수 사용메뉴 목록에 이름만 언급). 우동 면처리 none 확정(오너 확인, 새우튀김우동#7 레시피 03번 해면기 투입·세척/냉각/토렴 단계 부재로 뒷받침) → menu_18~20 _unverified 해제. 확정 메뉴 25개."
+      },
+      {
+        "version": "1.3",
+        "date": "2026-06-02",
+        "note": "쌀국수면 조리시간 50초 적용 확정(시간표 40초 vs 개별레시피 50초 불일치 → 개별레시피 50초 채택). 데이터값(default_cook_time_sec=50)은 변동 없으며 결정을 명문화. 설계문서·화면설계서와 50(0:50) 정렬 확인."
+      },
+      {
+        "version": "1.4",
+        "date": "2026-06-03",
+        "note": "active 필드 추가. 6개 메뉴 비활성화(active=false): menu_02 김치듬뿍국수, menu_03 얼큰부추국수, menu_11 나가사키짬뽕, menu_24 열무냉면, menu_25 비빔냉면, menu_26 물냉면 — 사용자 지시(제외=비활성화, 데이터 보존). 쌀국수면 조리시간 50→40초 변경(menu_22, menu_23) — 사용자 지시. 주의: v1.3에서 개별레시피·캡쳐 표기 기준 50초로 확정했으나, 본 변경은 사용자 결정에 따라 시간표값 40초로 재조정."
+      }
+    ],
+    "active_field": "active=false인 메뉴는 테스트 프로그램에서 비활성화(카드 생성 대상 제외). 데이터는 보존."
+  },
+  "cook_time_labels": {
+    "100": "1:40",
+    "150": "2:30",
+    "180": "3:00",
+    "60": "1:00",
+    "40": "0:40",
+    "-1": "풀어질때까지"
+  },
+  "process_labels": {
+    "none": "없음",
+    "wash": "세척",
+    "cool": "냉각",
+    "torim": "토렴"
+  },
+  "process_steps": {
+    "none": [],
+    "wash": [
+      "면세척"
+    ],
+    "cool": [
+      "면세척",
+      "냉각"
+    ],
+    "torim": [
+      "면세척",
+      "냉각",
+      "토렴"
+    ]
+  },
+  "noodle_type_colors": {
+    "_comment": "면 종류별 색상 강조. 워커가 텍스트를 읽지 않고도 면 종류 인지 가능하도록 함. 같은 면 종류 = 동일한 bg+text 색상.",
+    "생면1.0": {
+      "bg": "#E8F5E9",
+      "text": "#2E7D32",
+      "label": "초록"
+    },
+    "생면1.2": {
+      "bg": "#FFF3E0",
+      "text": "#E65100",
+      "label": "주황"
+    },
+    "메밀면": {
+      "bg": "#F3E5F5",
+      "text": "#7B1FA2",
+      "label": "보라"
+    },
+    "우동면": {
+      "bg": "#FFF9C4",
+      "text": "#F57F17",
+      "label": "노랑"
+    },
+    "쌀국수면": {
+      "bg": "#E0F7FA",
+      "text": "#00838F",
+      "label": "시안"
+    },
+    "냉면": {
+      "bg": "#FCE4EC",
+      "text": "#C62828",
+      "label": "빨강"
+    }
+  },
+  "menus": [
+    {
+      "id": "menu_01",
+      "recipe_num": 1,
+      "name": "잔치국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "온면",
+      "default_cook_time_sec": 100,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_02",
+      "recipe_num": 2,
+      "name": "김치듬뿍 국수",
+      "active": false,
+      "noodle_type": "생면1.0",
+      "category": "온면",
+      "default_cook_time_sec": 100,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_03",
+      "recipe_num": 9,
+      "name": "얼큰부추 국수",
+      "active": false,
+      "noodle_type": "생면1.0",
+      "category": "온면",
+      "default_cook_time_sec": 100,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_04",
+      "recipe_num": 42,
+      "name": "차돌 된장국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "온면",
+      "default_cook_time_sec": 100,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_05",
+      "recipe_num": 3,
+      "name": "냉국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "cool"
+    },
+    {
+      "id": "menu_06",
+      "recipe_num": 12,
+      "name": "돈비빔국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "cool"
+    },
+    {
+      "id": "menu_07",
+      "recipe_num": 16,
+      "name": "초계국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "cool"
+    },
+    {
+      "id": "menu_08",
+      "recipe_num": 17,
+      "name": "초계비빔 국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "cool"
+    },
+    {
+      "id": "menu_09",
+      "recipe_num": 18,
+      "name": "순콩국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "cool"
+    },
+    {
+      "id": "menu_10",
+      "recipe_num": 19,
+      "name": "열무국수",
+      "active": true,
+      "noodle_type": "생면1.0",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "cool"
+    },
+    {
+      "id": "menu_11",
+      "recipe_num": 8,
+      "name": "나가사키 짬뽕",
+      "active": false,
+      "noodle_type": "생면1.2",
+      "category": "온면",
+      "default_cook_time_sec": 150,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_12",
+      "recipe_num": 10,
+      "name": "상하이 진한짬뽕",
+      "active": true,
+      "noodle_type": "생면1.2",
+      "category": "온면",
+      "default_cook_time_sec": 150,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_13",
+      "recipe_num": 11,
+      "name": "소고기 짬뽕",
+      "active": true,
+      "noodle_type": "생면1.2",
+      "category": "온면",
+      "default_cook_time_sec": 150,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_14",
+      "recipe_num": 15,
+      "name": "맑은 고기국수",
+      "active": true,
+      "noodle_type": "생면1.2",
+      "category": "온면",
+      "default_cook_time_sec": 150,
+      "default_process": "torim"
+    },
+    {
+      "id": "menu_15",
+      "recipe_num": 4,
+      "name": "쫄비빔면",
+      "active": true,
+      "noodle_type": "생면1.2",
+      "category": "찬면",
+      "default_cook_time_sec": 180,
+      "default_process": "wash"
+    },
+    {
+      "id": "menu_16",
+      "recipe_num": 5,
+      "name": "메밀소바",
+      "active": true,
+      "noodle_type": "메밀면",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "cool"
+    },
+    {
+      "id": "menu_17",
+      "recipe_num": 14,
+      "name": "깨마니 비빔 막국수",
+      "active": true,
+      "noodle_type": "메밀면",
+      "category": "찬면",
+      "default_cook_time_sec": 150,
+      "default_process": "wash"
+    },
+    {
+      "id": "menu_18",
+      "recipe_num": 6,
+      "name": "국수나무 우동",
+      "active": true,
+      "noodle_type": "우동면",
+      "category": "온면",
+      "default_cook_time_sec": -1,
+      "default_process": "none"
+    },
+    {
+      "id": "menu_19",
+      "recipe_num": 7,
+      "name": "새우튀김 우동",
+      "active": true,
+      "noodle_type": "우동면",
+      "category": "온면",
+      "default_cook_time_sec": -1,
+      "default_process": "none"
+    },
+    {
+      "id": "menu_20",
+      "recipe_num": 44,
+      "name": "미니우동",
+      "active": true,
+      "noodle_type": "우동면",
+      "category": "온면",
+      "default_cook_time_sec": -1,
+      "default_process": "none"
+    },
+    {
+      "id": "menu_22",
+      "recipe_num": 13,
+      "name": "베트남 소고기 쌀국수",
+      "active": true,
+      "noodle_type": "쌀국수면",
+      "category": "온면",
+      "default_cook_time_sec": 40,
+      "default_process": "none"
+    },
+    {
+      "id": "menu_23",
+      "recipe_num": 39,
+      "name": "낙지볶음 쌀국수",
+      "active": true,
+      "noodle_type": "쌀국수면",
+      "category": "온면",
+      "default_cook_time_sec": 40,
+      "default_process": "none"
+    },
+    {
+      "id": "menu_24",
+      "recipe_num": 20,
+      "name": "열무냉면",
+      "active": false,
+      "noodle_type": "냉면",
+      "category": "찬면",
+      "default_cook_time_sec": 60,
+      "default_process": "wash"
+    },
+    {
+      "id": "menu_25",
+      "recipe_num": 21,
+      "name": "비빔냉면",
+      "active": false,
+      "noodle_type": "냉면",
+      "category": "찬면",
+      "default_cook_time_sec": 60,
+      "default_process": "wash"
+    },
+    {
+      "id": "menu_26",
+      "recipe_num": 22,
+      "name": "물냉면",
+      "active": false,
+      "noodle_type": "냉면",
+      "category": "찬면",
+      "default_cook_time_sec": 60,
+      "default_process": "wash"
+    }
+  ]
+}

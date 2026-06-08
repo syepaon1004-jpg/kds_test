@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 디자인 토큰: 화면 상세 설계서 §1.1 (Okabe-Ito 색맹 안전 팔레트) */
+:root {
+  --bg: #f7f8fa;
+  --card: #f2f2f2;
+  --border: #d9dde3;
+  --text: #1a1a1a;
+  --text-secondary: #4b5563;
+  --active: #56b4e9; /* active 상태 (파랑) */
+  --progress: #e69f00; /* in_progress 상태 (주황) */
+  --complete: #009e73; /* completed 상태 (초록) */
+  --neutral: #9ca3af; /* 비활성/빈 상태 */
+  --header-bg: #1f2937; /* 헤더 배경 (다크) */
+
+  /* 상태 연한 색 (포트 바 / 카드 배경 "연하게") */
+  --active-soft: #e6f3fb;
+  --progress-soft: #fbefd9;
+  --complete-soft: #d9f2ea;
+  --neutral-soft: #eceef1;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
