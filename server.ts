@@ -20,6 +20,7 @@ import { TimerManager } from './src/server/timer-manager';
 import { EventLogger } from './src/server/event-logger';
 import { SoundStore } from './src/server/sound-store';
 import { MenuRegistry } from './src/lib/menu-registry';
+import { kstNow } from './src/lib/time';
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = '0.0.0.0'; // 모든 인터페이스 바인딩 → WiFi 의 태블릿에서 접속 가능
@@ -86,7 +87,7 @@ app.prepare().then(() => {
     result?: EventLog['result'],
   ) => {
     const entry: EventLog = {
-      timestamp: new Date().toISOString(),
+      timestamp: kstNow(), // 한국시간(+09:00) 기록
       event,
       source,
       payload,

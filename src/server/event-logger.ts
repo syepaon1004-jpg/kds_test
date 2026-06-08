@@ -13,7 +13,8 @@ export class EventLogger {
   }
 
   log(entry: EventLog): void {
-    const date = new Date().toISOString().split('T')[0];
+    // 파일명 날짜 = 엔트리 타임스탬프(KST)의 날짜부분 → 파일이 한국시간 자정에 갈린다.
+    const date = entry.timestamp.split('T')[0];
     const path = join(this.logDir, `events_${date}.jsonl`);
     appendFileSync(path, JSON.stringify(entry) + '\n');
   }
