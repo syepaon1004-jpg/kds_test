@@ -1,5 +1,4 @@
 import type { Card } from '@/lib/types';
-import PortBar from './PortBar';
 import CardGrid from './CardGrid';
 
 interface Props {
@@ -19,11 +18,13 @@ interface Props {
   onEdit?: (card: Card) => void;
   /** 워커 롱프레스 "즉시 완료" (제공 시 활성) */
   onForceComplete?: (card: Card) => void;
+  /** 워커 해면기 투입 포트 표식 (제공 시 다이얼 활성) */
+  onSetPort?: (id: string, port: number | null) => void;
 }
 
 const noop = () => {};
 
-// 면 스테이션 KDS 핵심 화면(PortBar + CardGrid). 면 스테이션 페이지와 점장 우측 복제가 공유하는 단일 소스.
+// 면 스테이션 KDS 핵심 화면(6열 압축 CardGrid). 면 스테이션 페이지와 점장 우측 복제가 공유하는 단일 소스.
 export default function NoodleStationView({
   cards,
   mini = false,
@@ -37,10 +38,10 @@ export default function NoodleStationView({
   onDelete,
   onEdit,
   onForceComplete,
+  onSetPort,
 }: Props) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PortBar cards={cards} mini={mini} />
       <CardGrid
         cards={cards}
         mini={mini}
@@ -54,6 +55,7 @@ export default function NoodleStationView({
         onDelete={onDelete}
         onEdit={onEdit}
         onForceComplete={onForceComplete}
+        onSetPort={onSetPort}
       />
     </div>
   );

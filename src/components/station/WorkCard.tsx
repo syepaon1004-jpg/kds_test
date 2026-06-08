@@ -5,6 +5,7 @@ import { cookTimeLabel, noodleTypeStyle, PROCESS_STEPS, STATUS_STYLES } from '@/
 import { formatElapsed, formatMMSS } from '@/lib/format';
 import { useNow } from '@/lib/useNow';
 import { useLongPress } from '@/lib/useLongPress';
+import PortDial from './PortDial';
 
 interface WorkCardProps {
   card: Card;
@@ -23,6 +24,8 @@ interface WorkCardProps {
   onEdit?: (card: Card) => void;
   /** 제공되면 카드 롱프레스(꾹 누르기) → "즉시 완료" 팝업 (워커 전용) */
   onForceComplete?: (card: Card) => void;
+  /** 제공되면 해면기 투입 포트 표식 다이얼 표시 (워커 전용). mini 미러는 선택된 번호만 표시. */
+  onSetPort?: (id: string, port: number | null) => void;
 }
 
 // 화면 상세 설계서 §2.5 + 수정 1/7
@@ -39,6 +42,7 @@ export default function WorkCard({
   onDelete,
   onEdit,
   onForceComplete,
+  onSetPort,
 }: WorkCardProps) {
   const now = useNow();
   const elapsed = formatElapsed((now - new Date(card.created_at).getTime()) / 1000);
@@ -104,6 +108,12 @@ export default function WorkCard({
       {/* 메뉴명 + 조리 스텝 (mini 는 축소) */}
       <div className={mini ? 'px-2 pb-1 pt-1' : 'px-3 pb-2 pt-2'}>
         <div className={`font-semibold ${mini ? 'text-xs leading-tight' : ''}`}>{card.menu_name}</div>
+        {/* mini 미러: 선택된 투입 포트 번호만 읽기전용 배지로 표시 */}
+        {mini && card.basket_port != null && (
+          <div className="mt-0.5 inline-block rounded bg-text px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+            포트 {card.basket_port}
+          </div>
+        )}
         <div className={`text-text-secondary ${mini ? 'mt-1 text-[10px] leading-tight' : 'mt-2 text-sm'}`}>
           <div className="font-bold text-text">면 삶기</div>
           {/* 재료(면 종류) — 같은 재료끼리 정해진 배경색/글자색으로 강조 */}
@@ -123,6 +133,14 @@ export default function WorkCard({
           )}
         </div>
       </div>
+
+      {/* 해면기 투입 포트 다이얼 (워커 전용). 원형 1~6, 메모용. 롱프레스 제외는 PortDial 내부에서 처리 */}
+      {!mini && onSetPort && (
+        <div className="px-3 pb-1">
+          <div className="mb-1 text-center text-[11px] font-semibold text-text-secondary">투입 포트</div>
+          <PortDial value={card.basket_port} onChange={(p) => onSetPort(card.id, p)} />
+        </div>
+      )}
 
       {/* 상태별 액션 버튼 — 롱프레스 트리거 제외 (pointerdown 전파 차단, 화면설계서 §2.6) */}
       <div className={mini ? 'p-1' : 'p-2'} onPointerDown={(e) => e.stopPropagation()}>

@@ -54,6 +54,7 @@ export interface Card {
   status: CardStatus;
   timer_remaining_sec: number | null; // cook_time_sec === -1 이면 null
   paused: boolean; // in_progress 타이머 일시중지 여부 (true면 서버가 감소 안 함)
+  basket_port: number | null; // 해면기 투입 포트 표식 (1~6, null=미지정). 워커 수동 메모, 로직 영향 없음.
   created_at: string; // ISO timestamp
 }
 
@@ -72,6 +73,10 @@ export interface CardUpdatePayload {
   card_id: string;
   cook_time_sec?: number;
   noodle_process?: NoodleProcess;
+}
+export interface CardSetPortPayload {
+  card_id: string;
+  port: number | null; // 1~6, null = 해제
 }
 
 export interface CardsSyncPayload {
@@ -120,6 +125,7 @@ export interface ClientToServerEvents {
   'card:manual_complete': (payload: CardIdPayload) => void;
   'card:complete': (payload: CardIdPayload) => void;
   'card:force_complete': (payload: CardIdPayload) => void;
+  'card:set_port': (payload: CardSetPortPayload) => void;
   'sound:upload': (payload: SoundUploadPayload) => void;
   'sound:reset': (payload: SoundResetPayload) => void;
 }

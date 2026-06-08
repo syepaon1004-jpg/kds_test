@@ -8,6 +8,7 @@ import { Server } from 'socket.io';
 import type {
   CardCreatePayload,
   CardIdPayload,
+  CardSetPortPayload,
   CardUpdatePayload,
   ClientToServerEvents,
   EventLog,
@@ -27,6 +28,7 @@ const port = Number(process.env.PORT ?? 3000);
 // 메뉴데이터 v1.4: 쌀국수면 = 40초 (50초에서 변경). 정의서 v1.4 §6.
 const VALID_COOK_TIMES = new Set([100, 150, 180, 60, 40, -1]);
 const VALID_PROCESS = new Set<NoodleProcess>(['none', 'wash', 'cool', 'torim']);
+const VALID_PORTS = new Set([1, 2, 3, 4, 5, 6]); // 해면기 1~6번 (가운데 7번 미사용)
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
@@ -128,6 +130,7 @@ app.prepare().then(() => {
         status: 'active' as const,
         timer_remaining_sec: null,
         paused: false,
+        basket_port: null,
         created_at: new Date().toISOString(),
       };
       store.add(card);
@@ -219,6 +222,17 @@ app.prepare().then(() => {
       store.remove(card_id);
       broadcast();
       record('card:force_complete', role, { card_id }, { card_id, status_before });
+    });
+
+    // ── card:set_port (워커) — 해면기 투입 포트 표식 (1~6, null=해제). 상태 무관, 로직 영향 없음 ──
+    socket.on('card:set_port', ({ card_id, port }: CardSetPortPayload) => {
+      const card = store.getById(card_id);
+      if (!card) return socket.emit('error', { message: '카드 없음' });
+      if (port !== null && !VALID_PORTS.has(port))
+        return socket.emit('error', { message: '포트 번호 오류' });
+      store.update(card_id, { basket_port: port });
+      broadcast();
+      record('card:set_port', role, { card_id, port });
     });
 
     // ── card:delete (점장) — §3.6, 상태 무관 삭제 ──

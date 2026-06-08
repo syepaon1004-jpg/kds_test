@@ -39,6 +39,7 @@ export default function NoodleStationPage() {
         onResumeTimer={(id) => emit('card:resume_timer', { card_id: id })}
         onResetTimer={(id) => emit('card:reset_timer', { card_id: id })}
         onForceComplete={(card) => setForceCompletingId(card.id)}
+        onSetPort={(id, port) => emit('card:set_port', { card_id: id, port })}
       />
 
       <ForceCompleteModal
