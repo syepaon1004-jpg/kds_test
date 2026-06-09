@@ -115,9 +115,17 @@ function playBuffer(buf: AudioBuffer): AudioBufferSourceNode | null {
 /** 서버 sounds:sync 수신 시 호출 (useKdsSocket 가 갱신). 커스텀 음원은 미리 디코드. */
 export function setSoundConfig(manifest: SoundManifest): void {
   soundConfig = manifest;
+  const liveKeys = new Set<string>();
   for (const type of Object.keys(manifest) as SoundType[]) {
     const c = manifest[type];
-    if (c?.hasCustom) void loadBuffer(type, c.version);
+    if (c?.hasCustom) {
+      liveKeys.add(`${type}:${c.version}`);
+      void loadBuffer(type, c.version);
+    }
+  }
+  // 버전이 바뀐/해제된 오래된 버퍼 정리 (재업로드 누적 방지)
+  for (const key of [...bufferCache.keys()]) {
+    if (!liveKeys.has(key)) bufferCache.delete(key);
   }
 }
 
