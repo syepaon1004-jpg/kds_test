@@ -2,7 +2,14 @@
 
 import { useEffect, useRef } from 'react';
 import type { Card, CardStatus } from './types';
-import { playClick, playNewCard, playTimerDone, playTimerStart, unlockAudio } from './sounds';
+import {
+  playClick,
+  playNewCard,
+  playTimerStart,
+  startTimerDoneAlarm,
+  stopTimerDoneAlarm,
+  unlockAudio,
+} from './sounds';
 
 /** 브라우저 자동재생 정책: 첫 사용자 제스처에 오디오 컨텍스트를 깨운다 → 이후 도착음/경고음이 실제로 울림. */
 export function useAudioUnlock(): void {
@@ -73,29 +80,17 @@ export function useTimerStartChime(cards: Card[]): void {
   }, [cards]);
 }
 
-/** 수정 7: 타이머 완료(completed && cook_time_sec!==-1) 카드가 남아있는 동안 완료음 반복. 전달되어 0건이면 정지. */
+/** 수정 7: 타이머 완료(completed && cook_time_sec!==-1) 카드가 남아있는 동안 완료음 반복.
+ *  반복 간격은 음원 길이에 맞춰지고(sounds.ts), 완료/삭제 등으로 0건이 되면 현재 재생 음까지 즉시 정지. */
 export function useTimerDoneAlarm(cards: Card[]): void {
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   useEffect(() => {
+    // start/stop 은 idempotent (모듈 alarmActive 가 단일 소스). 매 cards 변경마다 상태를 재확인해
+    // 재마운트(Strict Mode)/엣지에서도 어긋나지 않게 한다.
     const pending = cards.some((c) => c.status === 'completed' && c.cook_time_sec !== -1);
-
-    if (pending && timerRef.current === null) {
-      playTimerDone(); // 즉시 1회
-      timerRef.current = setInterval(playTimerDone, 1200);
-    } else if (!pending && timerRef.current !== null) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
+    if (pending) startTimerDoneAlarm();
+    else stopTimerDoneAlarm();
   }, [cards]);
 
   // 언마운트 시 정지
-  useEffect(() => {
-    return () => {
-      if (timerRef.current !== null) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, []);
+  useEffect(() => () => stopTimerDoneAlarm(), []);
 }

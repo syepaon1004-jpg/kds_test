@@ -43,10 +43,15 @@ export function unlockAudio(): void {
   }
 }
 
-// 단일 톤 비프.
-function beep(opts: { freq: number; durationMs: number; type?: OscillatorType; gain?: number }): void {
+// 단일 톤 비프. 생성한 오실레이터를 반환(알람이 즉시 정지할 때 stop() 호출용).
+function beep(opts: {
+  freq: number;
+  durationMs: number;
+  type?: OscillatorType;
+  gain?: number;
+}): OscillatorNode | null {
   const audio = getCtx();
-  if (!audio) return;
+  if (!audio) return null;
   const { freq, durationMs, type = 'sine', gain = 0.25 } = opts;
   const now = audio.currentTime;
   const dur = durationMs / 1000;
@@ -61,6 +66,7 @@ function beep(opts: { freq: number; durationMs: number; type?: OscillatorType; g
   g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
   osc.start(now);
   osc.stop(now + dur + 0.02);
+  return osc;
 }
 
 // ── 사용자 업로드 효과음 설정 (없으면 합성음 폴백) ──
@@ -92,16 +98,17 @@ async function loadBuffer(type: SoundType, version: number): Promise<void> {
   }
 }
 
-function playBuffer(buf: AudioBuffer): void {
+function playBuffer(buf: AudioBuffer): AudioBufferSourceNode | null {
   const audio = getCtx();
-  if (!audio) return;
+  if (!audio) return null;
   try {
     const src = audio.createBufferSource();
     src.buffer = buf;
     src.connect(audio.destination);
     src.start();
+    return src;
   } catch {
-    // 무시
+    return null;
   }
 }
 
@@ -149,8 +156,9 @@ function synthTimerStart(): void {
   beep({ freq: 587, durationMs: 80, type: 'sine', gain: 0.28 }); // D5
   window.setTimeout(() => beep({ freq: 880, durationMs: 120, type: 'sine', gain: 0.28 }), 70); // A5 (상승)
 }
-function synthTimerDone(): void {
-  beep({ freq: 880, durationMs: 320, type: 'sine', gain: 0.3 });
+const SYNTH_TIMER_DONE_SEC = 0.32; // synthTimerDone 길이(320ms)
+function synthTimerDone(): OscillatorNode | null {
+  return beep({ freq: 880, durationMs: 320, type: 'sine', gain: 0.3 });
 }
 
 /** "톡" — 버튼 터치음 (사용자 음원 또는 기본) */
@@ -168,7 +176,60 @@ export function playTimerStart(): void {
   playSound('timerStart', synthTimerStart);
 }
 
-/** 타이머 완료 경고음 — 반복 호출됨 (사용자 음원 또는 기본 880Hz) */
+/** 타이머 완료 경고음 — 단발 (SettingsModal 미리듣기용) */
 export function playTimerDone(): void {
   playSound('timerDone', synthTimerDone);
+}
+
+// ── 타이머 완료 경고음 알람(반복) ──
+// 반복 간격을 음원의 실제 길이에 맞추고(겹침/공백 방지), 정지 시 현재 재생 중인 음까지 즉시 끊는다.
+let alarmActive = false;
+let alarmTimer: ReturnType<typeof setTimeout> | null = null;
+let alarmNode: AudioBufferSourceNode | OscillatorNode | null = null;
+
+// timerDone 1회 재생 → { 재생 노드, 길이(초) }. 커스텀 버퍼 준비 전엔 합성음.
+function playTimerDoneOnce(): {
+  node: AudioBufferSourceNode | OscillatorNode | null;
+  durationSec: number;
+} {
+  const c = soundConfig.timerDone;
+  if (c?.hasCustom) {
+    const key = `timerDone:${c.version}`;
+    const buf = bufferCache.get(key);
+    if (buf) return { node: playBuffer(buf), durationSec: buf.duration };
+    if (buf === undefined) void loadBuffer('timerDone', c.version);
+    // 준비 전 → 합성음 폴백
+  }
+  return { node: synthTimerDone(), durationSec: SYNTH_TIMER_DONE_SEC };
+}
+
+/** 타이머 완료 경고음 반복 시작 — 한 번 다 울린 뒤 다음 재생(간격 = 음원 길이+여유, 최소 0.8초). */
+export function startTimerDoneAlarm(): void {
+  if (alarmActive) return;
+  alarmActive = true;
+  const tick = () => {
+    if (!alarmActive) return;
+    const { node, durationSec } = playTimerDoneOnce();
+    alarmNode = node;
+    const interval = Math.max(durationSec + 0.15, 0.8); // 길이에 맞춰 겹침 없이, 짧은 음은 최소 0.8초
+    alarmTimer = setTimeout(tick, interval * 1000);
+  };
+  tick();
+}
+
+/** 타이머 완료 경고음 즉시 정지 — 예약된 다음 재생 + 현재 재생 중인 음까지 끊는다. */
+export function stopTimerDoneAlarm(): void {
+  alarmActive = false;
+  if (alarmTimer) {
+    clearTimeout(alarmTimer);
+    alarmTimer = null;
+  }
+  if (alarmNode) {
+    try {
+      alarmNode.stop(); // 현재 재생 중인 소리 즉시 차단
+    } catch {
+      // 이미 끝난 노드면 무시
+    }
+    alarmNode = null;
+  }
 }
