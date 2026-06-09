@@ -71,22 +71,61 @@ let soundConfig: SoundManifest = {
   timerDone: { hasCustom: false, version: 0 },
 };
 
-/** 서버 sounds:sync 수신 시 호출 (useKdsSocket 가 갱신). */
-export function setSoundConfig(manifest: SoundManifest): void {
-  soundConfig = manifest;
+// 커스텀 음원을 Web Audio 버퍼로 디코드해 캐시.
+// iOS Safari 는 <audio>.play() 를 사용자 제스처 밖(소켓 이벤트)에서 막지만(NotAllowedError),
+// 언락된 AudioContext 의 BufferSource 재생은 허용 → 아이패드에서도 동작한다.
+const bufferCache = new Map<string, AudioBuffer | null>(); // null = 로딩중/실패 → 기본음 폴백
+
+async function loadBuffer(type: SoundType, version: number): Promise<void> {
+  const audio = getCtx();
+  if (!audio) return;
+  const key = `${type}:${version}`;
+  if (bufferCache.has(key)) return; // 이미 로딩/완료
+  bufferCache.set(key, null); // 로딩중 표시 (중복 fetch 방지)
+  try {
+    const res = await fetch(`/_sound/${type}?v=${version}`);
+    const arr = await res.arrayBuffer();
+    const buf = await audio.decodeAudioData(arr);
+    bufferCache.set(key, buf);
+  } catch {
+    // 디코드/네트워크 실패 → null 유지 (기본음 폴백, 재시도 안 함)
+  }
 }
 
-// 사용자 음원이 있으면 그 파일을 재생, 없으면 기본 합성음.
+function playBuffer(buf: AudioBuffer): void {
+  const audio = getCtx();
+  if (!audio) return;
+  try {
+    const src = audio.createBufferSource();
+    src.buffer = buf;
+    src.connect(audio.destination);
+    src.start();
+  } catch {
+    // 무시
+  }
+}
+
+/** 서버 sounds:sync 수신 시 호출 (useKdsSocket 가 갱신). 커스텀 음원은 미리 디코드. */
+export function setSoundConfig(manifest: SoundManifest): void {
+  soundConfig = manifest;
+  for (const type of Object.keys(manifest) as SoundType[]) {
+    const c = manifest[type];
+    if (c?.hasCustom) void loadBuffer(type, c.version);
+  }
+}
+
+// 사용자 음원이 있으면 Web Audio 버퍼로 재생(아이패드 호환), 준비 전/실패 시 기본 합성음.
 function playSound(type: SoundType, fallback: () => void): void {
   const c = soundConfig[type];
   if (c?.hasCustom) {
-    try {
-      const audio = new Audio(`/_sound/${type}?v=${c.version}`);
-      void audio.play();
+    const key = `${type}:${c.version}`;
+    const buf = bufferCache.get(key);
+    if (buf) {
+      playBuffer(buf);
       return;
-    } catch {
-      // 재생 실패 시 기본음으로
     }
+    if (buf === undefined) void loadBuffer(type, c.version); // 첫 호출 → 로드 시작
+    // 준비 전: 이번엔 기본음 (다음 호출부터 커스텀)
   }
   fallback();
 }
