@@ -67,6 +67,7 @@ function beep(opts: { freq: number; durationMs: number; type?: OscillatorType; g
 let soundConfig: SoundManifest = {
   click: { hasCustom: false, version: 0 },
   newCard: { hasCustom: false, version: 0 },
+  timerStart: { hasCustom: false, version: 0 },
   timerDone: { hasCustom: false, version: 0 },
 };
 
@@ -103,6 +104,12 @@ function synthNewCard(): void {
   ding(0);
   ding(260);
 }
+// 타이머 시작음 — 상승 2음("삑↗"). 시작을 알리는 경쾌한 신호 (완료음과 구분).
+function synthTimerStart(): void {
+  if (!getCtx()) return;
+  beep({ freq: 587, durationMs: 80, type: 'sine', gain: 0.28 }); // D5
+  window.setTimeout(() => beep({ freq: 880, durationMs: 120, type: 'sine', gain: 0.28 }), 70); // A5 (상승)
+}
 function synthTimerDone(): void {
   beep({ freq: 880, durationMs: 320, type: 'sine', gain: 0.3 });
 }
@@ -115,6 +122,11 @@ export function playClick(): void {
 /** 새 주문 도착음 (사용자 음원 또는 기본 "띠링띠링") */
 export function playNewCard(): void {
   playSound('newCard', synthNewCard);
+}
+
+/** 타이머 시작음 (사용자 음원 또는 기본 상승 2음) */
+export function playTimerStart(): void {
+  playSound('timerStart', synthTimerStart);
 }
 
 /** 타이머 완료 경고음 — 반복 호출됨 (사용자 음원 또는 기본 880Hz) */

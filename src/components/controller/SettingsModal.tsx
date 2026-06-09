@@ -2,11 +2,12 @@
 
 import { useRef } from 'react';
 import type { SoundManifest, SoundType } from '@/lib/types';
-import { playClick, playNewCard, playTimerDone } from '@/lib/sounds';
+import { playClick, playNewCard, playTimerStart, playTimerDone } from '@/lib/sounds';
 
 const SOUNDS: { type: SoundType; label: string; desc: string; preview: () => void }[] = [
   { type: 'click', label: '버튼 터치음', desc: '모든 버튼 클릭 시', preview: playClick },
   { type: 'newCard', label: '새 주문 도착음', desc: '새 카드가 들어올 때', preview: playNewCard },
+  { type: 'timerStart', label: '타이머 시작음', desc: '타이머를 시작할 때', preview: playTimerStart },
   { type: 'timerDone', label: '타이머 완료 경고음', desc: '면이 다 됐을 때 (반복)', preview: playTimerDone },
 ];
 

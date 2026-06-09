@@ -7,6 +7,7 @@ import {
   useAudioUnlock,
   useClickSound,
   useNewCardChime,
+  useTimerStartChime,
   useTimerDoneAlarm,
 } from '@/lib/useKdsAudio';
 import StationHeader from '@/components/station/StationHeader';
@@ -19,6 +20,7 @@ export default function NoodleStationPage() {
   useAudioUnlock(); // 첫 제스처에 오디오 깨우기 (자동재생 정책)
   useClickSound(); // 수정 6: 모든 버튼 터치음
   useNewCardChime(cards); // 수정 5: 새 카드 도착음 "띠링띠링"
+  useTimerStartChime(cards); // 타이머 시작음 (active→in_progress)
   useTimerDoneAlarm(cards); // 수정 7: 타이머 완료 반복 경고음
 
   // 모달은 id 만 보관하고 라이브 cards 에서 파생 — 모달 열린 채 상태/남은시간이 갱신되고

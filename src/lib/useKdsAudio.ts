@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type { Card } from './types';
-import { playClick, playNewCard, playTimerDone, unlockAudio } from './sounds';
+import type { Card, CardStatus } from './types';
+import { playClick, playNewCard, playTimerDone, playTimerStart, unlockAudio } from './sounds';
 
 /** 브라우저 자동재생 정책: 첫 사용자 제스처에 오디오 컨텍스트를 깨운다 → 이후 도착음/경고음이 실제로 울림. */
 export function useAudioUnlock(): void {
@@ -49,6 +49,27 @@ export function useNewCardChime(cards: Card[]): void {
     }
     if (hasNew) playNewCard();
     seen.current = ids;
+  }, [cards]);
+}
+
+/** 타이머 시작음: 카드가 active → in_progress 로 바뀌는 순간(워커 "시작" 탭) 1회. 최초/재접속 동기화 시엔 울리지 않음. */
+export function useTimerStartChime(cards: Card[]): void {
+  const prev = useRef<Map<string, CardStatus> | null>(null);
+  useEffect(() => {
+    const cur = new Map(cards.map((c) => [c.id, c.status]));
+    if (prev.current === null) {
+      prev.current = cur; // 최초 동기화 — 시딩만 (소리 없음)
+      return;
+    }
+    let started = false;
+    for (const c of cards) {
+      if (c.status === 'in_progress' && prev.current.get(c.id) === 'active') {
+        started = true;
+        break;
+      }
+    }
+    if (started) playTimerStart();
+    prev.current = cur;
   }, [cards]);
 }
 

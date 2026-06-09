@@ -16,6 +16,7 @@ type Role = 'controller' | 'station';
 const DEFAULT_SOUND_MANIFEST: SoundManifest = {
   click: { hasCustom: false, version: 0 },
   newCard: { hasCustom: false, version: 0 },
+  timerStart: { hasCustom: false, version: 0 },
   timerDone: { hasCustom: false, version: 0 },
 };
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;

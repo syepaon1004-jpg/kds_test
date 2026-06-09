@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { join } from 'node:path';
 import type { SoundManifest, SoundType } from '../lib/types';
 
-const TYPES: SoundType[] = ['click', 'newCard', 'timerDone'];
+const TYPES: SoundType[] = ['click', 'newCard', 'timerStart', 'timerDone'];
 
 interface Entry {
   mime: string;

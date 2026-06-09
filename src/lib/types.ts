@@ -87,7 +87,7 @@ export interface MenusSyncPayload {
 }
 
 // ── 효과음 (사용자 업로드 / 기본음) ──
-export type SoundType = 'click' | 'newCard' | 'timerDone';
+export type SoundType = 'click' | 'newCard' | 'timerStart' | 'timerDone';
 
 /** 각 효과음의 현재 상태. hasCustom=false 면 기본 합성음 사용. version 은 캐시 무효화용. */
 export type SoundManifest = Record<SoundType, { hasCustom: boolean; version: number }>;
