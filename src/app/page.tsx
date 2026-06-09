@@ -23,6 +23,13 @@ export default function Home() {
           면 스테이션 KDS
           <span className="block text-sm font-normal opacity-90">/station/noodle</span>
         </Link>
+        <Link
+          href="/dashboard"
+          className="rounded-xl bg-header-bg px-8 py-4 text-center text-lg font-semibold text-white"
+        >
+          분석 대시보드
+          <span className="block text-sm font-normal opacity-90">/dashboard</span>
+        </Link>
       </div>
     </main>
   );
